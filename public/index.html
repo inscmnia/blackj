@@ -16,11 +16,11 @@
 }
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
-
+ 
 /* ══════════════ SCREENS ══════════════ */
 .screen{display:none;width:100%;height:100vh;flex-direction:column;align-items:center;justify-content:center;}
 .screen.active{display:flex;}
-
+ 
 /* ══════════════ LOBBY SCREEN ══════════════ */
 #lobby-screen{background:linear-gradient(160deg,#0d1f13 0%,#060e08 100%);padding:2rem;}
 .logo{text-align:center;margin-bottom:2.5rem;}
@@ -76,13 +76,13 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .dot-g{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;}
 .dot-y{width:6px;height:6px;border-radius:50%;background:#eab308;box-shadow:0 0 6px #eab308;}
 .err-msg{color:#f87171;font-size:0.8rem;text-align:center;margin-top:0.7rem;min-height:1.2rem;}
-
+ 
 /* ══════════════ GAME SCREEN ══════════════ */
 #game-screen{
   position:relative;padding:0;overflow:hidden;
   background:radial-gradient(ellipse at 50% 35%,#1a3d28 0%,#0b2016 55%,#04100a 100%);
 }
-
+ 
 /* subtle grid */
 #game-screen::before{
   content:'';position:absolute;inset:0;
@@ -91,7 +91,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
     repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(255,255,255,0.006) 48px,rgba(255,255,255,0.006) 49px);
   pointer-events:none;z-index:0;
 }
-
+ 
 /* ── FELT TABLE ── */
 .table-wrap{
   position:absolute;
@@ -134,7 +134,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
   color:rgba(212,168,67,0.18);
   white-space:nowrap;
 }
-
+ 
 /* ── HUD ── */
 .hud{
   position:absolute;top:0;left:0;right:0;
@@ -165,13 +165,13 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
   font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-weight:500;
 }
 .btn-leave:hover{background:rgba(220,38,38,0.2);}
-
+ 
 /* deck indicator */
 .deck-pile{position:absolute;top:0.9rem;right:1rem;z-index:20;}
 .deck-cards{width:46px;height:64px;position:relative;}
 .deck-card{position:absolute;width:44px;height:62px;border-radius:6px;background:linear-gradient(145deg,#1a2464,#6b1111,#1a2464);border:1px solid rgba(255,255,255,0.1);box-shadow:2px 2px 7px rgba(0,0,0,0.6);}
 .deck-count{text-align:center;font-size:0.55rem;color:rgba(254,249,236,0.25);margin-top:4px;letter-spacing:0.05em;}
-
+ 
 /* ── SEATS ── */
 .seat{
   position:absolute;z-index:5;
@@ -181,7 +181,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .seat.my-seat{z-index:6;}
 .seat.is-turn{filter:drop-shadow(0 0 14px rgba(212,168,67,0.5));}
 .seat.is-bust .seat-name-row{opacity:0.5;}
-
+ 
 .seat-name-row{
   display:flex;align-items:center;gap:5px;
   font-size:0.7rem;color:rgba(254,249,236,0.5);
@@ -190,7 +190,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .seat.is-turn .seat-name-row{color:var(--gold2);}
 .sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background 0.3s,box-shadow 0.3s;}
 .sd-w{background:#374151;}.sd-r{background:#22c55e;box-shadow:0 0 5px #22c55e;}.sd-p{background:#eab308;box-shadow:0 0 5px #eab308;}.sd-d{background:#374151;}
-
+ 
 .hand-area{display:flex;align-items:center;justify-content:center;min-height:90px;position:relative;}
 .seat-score{
   font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;
@@ -202,7 +202,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 }
 .seat-bet-info{font-size:0.62rem;color:rgba(212,168,67,0.55);min-height:14px;text-align:center;}
 .seat-bal-info{font-size:0.6rem;color:rgba(254,249,236,0.25);text-align:center;}
-
+ 
 /* ── CARDS ── */
 .card{
   width:58px;height:84px;border-radius:9px;
@@ -240,7 +240,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .ccorn.bl{top:auto;bottom:4px;left:auto;right:5px;transform:rotate(180deg);}
 .card-back{background:linear-gradient(145deg,#1a2464 0%,#6b1111 50%,#1a2464 100%);border:1px solid rgba(255,255,255,0.1);}
 .card-back-inner{width:44px;height:68px;border-radius:5px;border:2px solid rgba(255,255,255,0.12);background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 2px,transparent 2px,transparent 8px);}
-
+ 
 /* my cards bigger */
 .my-seat .card{width:68px;height:98px;border-radius:11px;margin-left:-15px;}
 .my-seat .card:first-child{margin-left:0;}
@@ -248,7 +248,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .my-seat .csuit{font-size:1.25rem;}
 .my-seat .ccorn{font-size:0.6rem;}
 .my-seat .card-back-inner{width:54px;height:80px;}
-
+ 
 /* score badge */
 .score-badge{
   display:none;
@@ -260,7 +260,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .score-badge.show{display:inline-block;}
 .score-badge.bust{border-color:rgba(239,68,68,0.5);color:#f87171;}
 .score-badge.bj{border-color:rgba(212,168,67,0.7);color:var(--gold);}
-
+ 
 /* ── DEALER SEAT ── */
 .dealer-seat{
   position:absolute;top:8px;left:50%;
@@ -271,7 +271,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
   font-size:0.58rem;letter-spacing:0.24em;text-transform:uppercase;
   color:rgba(254,249,236,0.25);margin-bottom:4px;
 }
-
+ 
 /* ── BOTTOM PANEL ── */
 .bottom-panel{
   position:absolute;bottom:0;left:0;right:0;z-index:15;
@@ -284,7 +284,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
   text-align:center;min-height:18px;transition:color 0.3s;
 }
 .status-line.hi{color:var(--gold);}
-
+ 
 /* score+hand row */
 .my-hand-row{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;justify-content:center;}
 .my-score{
@@ -292,7 +292,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
   color:var(--gold);display:none;
 }
 .my-score.show{display:block;}
-
+ 
 /* BET ROW */
 .bet-row{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
 .bet-display{
@@ -302,7 +302,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 }
 .bet-lbl{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.18em;color:rgba(254,249,236,0.28);}
 .bet-amt{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--gold);}
-
+ 
 /* CHIPS */
 .chips-row{display:flex;gap:0.42rem;align-items:center;justify-content:center;flex-wrap:wrap;}
 .chip{
@@ -318,7 +318,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .chip:hover{transform:translateY(-5px) scale(1.09);}
 .chip:active{transform:scale(0.93);}
 .chip:disabled{opacity:0.25;cursor:not-allowed;transform:none;}
-
+ 
 .ch5{background:radial-gradient(circle at 35% 30%,#ff7070,#dc2626 55%,#7f1d1d);box-shadow:0 6px 0 #7a0d0d,0 8px 16px rgba(220,38,38,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .ch5:hover{box-shadow:0 10px 0 #7a0d0d,0 14px 22px rgba(220,38,38,0.5);}
 .ch5:active{box-shadow:0 2px 0 #7a0d0d;}
@@ -334,7 +334,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .ch1k{background:radial-gradient(circle at 35% 30%,#fbbf24,#d97706 55%,#78350f);box-shadow:0 6px 0 #5a2200,0 8px 16px rgba(217,119,6,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .ch1k:hover{box-shadow:0 10px 0 #5a2200,0 14px 22px rgba(217,119,6,0.5);}
 .ch1k:active{box-shadow:0 2px 0 #5a2200;}
-
+ 
 /* ACTION BUTTONS */
 .action-row{display:flex;gap:0.45rem;flex-wrap:wrap;justify-content:center;}
 .abtn{
@@ -360,7 +360,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .a-dbl:active:not(:disabled){box-shadow:0 1px 0 #0c4a6e;transform:translateY(3px);}
 .a-clear{background:rgba(255,255,255,0.06);color:rgba(254,249,236,0.5);border:1px solid rgba(255,255,255,0.09);box-shadow:none;}
 .a-clear:hover:not(:disabled){background:rgba(255,255,255,0.1);}
-
+ 
 /* RESULT OVERLAY */
 .result-overlay{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -382,42 +382,42 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
 .res-change{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:1.4rem;}
 .c-win{color:var(--gold)}.c-lose{color:#ef4444}.c-push{color:#38bdf8}
 .c-pos{color:#22c55e}.c-neg{color:#ef4444}.c-neu{color:#38bdf8}
-
+ 
 /* ALL RESULTS TABLE */
 .all-results{margin-top:0.8rem;border-top:1px solid rgba(255,255,255,0.07);padding-top:0.8rem;}
 .all-results-row{display:flex;justify-content:space-between;gap:1.5rem;font-size:0.78rem;margin-bottom:0.35rem;}
 .all-results-row .name{color:rgba(254,249,236,0.5);}
 .all-results-row .outcome{font-family:'Syne',sans-serif;font-weight:700;}
-
+ 
 .hid{display:none!important;}
-
+ 
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 </style>
 </head>
 <body>
-
+ 
 <!-- ══════════════ LOBBY ══════════════ -->
 <div id="lobby-screen" class="screen active">
   <div class="logo"><h1>ROYAL FELT</h1><p>Private Blackjack Lounge</p></div>
   <div class="lobby-card">
     <div class="field"><label>Your nickname</label><input id="inp-name" type="text" placeholder="Enter name…" maxlength="20"></div>
     <button class="btn btn-gold" onclick="createLobby()">Create lobby</button>
-
+ 
     <div id="created-box" class="lobby-code-box">
       <div style="font-size:0.6rem;letter-spacing:0.22em;color:rgba(254,249,236,0.28);text-transform:uppercase;margin-bottom:0.3rem;">Lobby code</div>
       <div class="lobby-code-big" id="show-code">----</div>
       <p>Share this code with your friends</p>
       <div id="waiting-list" class="waiting-list"></div>
     </div>
-
+ 
     <div class="sep">or join a friend</div>
-
+ 
     <div class="field"><label>Lobby code</label><input id="inp-code" type="text" placeholder="e.g. XKQR" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
     <button class="btn btn-outline" onclick="joinLobby()">Join lobby</button>
     <div class="err-msg" id="err-msg"></div>
   </div>
 </div>
-
+ 
 <!-- ══════════════ GAME ══════════════ -->
 <div id="game-screen" class="screen">
   <!-- felt table -->
@@ -425,7 +425,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
     <div class="felt-shadow"></div>
     <div class="felt-oval"></div>
   </div>
-
+ 
   <!-- hud -->
   <div class="hud">
     <div class="hud-bal"><span class="lbl">₮</span><span id="hud-balance">5,000</span></div>
@@ -435,7 +435,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
     </div>
     <button class="btn-leave" onclick="leaveLobby()">Leave</button>
   </div>
-
+ 
   <!-- deck -->
   <div class="deck-pile">
     <div class="deck-cards">
@@ -445,26 +445,26 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
     </div>
     <div class="deck-count" id="deck-count">— cards</div>
   </div>
-
+ 
   <!-- dealer -->
   <div class="dealer-seat">
     <div class="dealer-label">Dealer</div>
     <div class="hand-area" id="dealer-hand"></div>
     <div class="score-badge" id="dealer-score"></div>
   </div>
-
+ 
   <!-- player seats rendered by JS -->
   <div id="player-seats"></div>
-
+ 
   <!-- bottom panel -->
   <div class="bottom-panel">
     <div class="status-line" id="status-line"></div>
-
+ 
     <div class="my-hand-row">
       <div class="score-badge my-score" id="my-score"></div>
       <div class="hand-area" id="my-hand" style="min-height:104px;"></div>
     </div>
-
+ 
     <!-- betting ui -->
     <div id="bet-ui">
       <div class="bet-row">
@@ -482,7 +482,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
         <button class="abtn a-ready" id="ready-btn" onclick="setReady()">Ready ✓</button>
       </div>
     </div>
-
+ 
     <!-- play ui -->
     <div id="play-ui" class="hid">
       <div class="action-row">
@@ -493,7 +493,7 @@ body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
     </div>
   </div>
 </div>
-
+ 
 <script>
 // ─── SOCKET ────────────────────────────────────────────────────────
 const socket = io();
@@ -502,35 +502,39 @@ let myBet = 0;
 let lobbyCode = null;
 let lastState = null;
 const RED_SUITS = new Set(['♥', '♦']);
-
+ 
 // track which card elements already exist per hand, to avoid re-animating
 const renderedCards = {}; // seatKey -> count
-
+ 
 // ─── LOBBY LOGIC ───────────────────────────────────────────────────
 function createLobby() {
   const name = document.getElementById('inp-name').value.trim() || 'Player';
   socket.emit('create_lobby', { name });
 }
-
+ 
 function joinLobby() {
   const name = document.getElementById('inp-name').value.trim() || 'Player';
   const code = document.getElementById('inp-code').value.trim().toUpperCase();
   if (code.length !== 4) { showErr('Enter a 4-character code'); return; }
   socket.emit('join_lobby', { code, name });
 }
-
+ 
 function leaveLobby() {
   socket.disconnect();
   location.reload();
 }
-
+ 
 function showErr(msg) {
   const el = document.getElementById('err-msg');
   el.textContent = msg;
   setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3000);
 }
-
+ 
 // ─── SOCKET EVENTS ─────────────────────────────────────────────────
+socket.on('connect', () => {
+  myId = socket.id;
+});
+ 
 socket.on('lobby_created', ({ code }) => {
   lobbyCode = code;
   document.getElementById('show-code').textContent = code;
@@ -539,38 +543,34 @@ socket.on('lobby_created', ({ code }) => {
   wl.style.display = 'block';
   wl.innerHTML = `<div class="wdot"><span class="dot-g"></span>You (host)</div>`;
 });
-
+ 
 socket.on('lobby_joined', ({ code }) => {
   lobbyCode = code;
 });
-
+ 
 socket.on('error', (msg) => showErr(msg));
-
+ 
 socket.on('state', (state) => {
-  // first state = enter game
-  if (!myId && state.myId) {
-    myId = state.myId;
+  // set myId from server confirmation if not yet set
+  if (state.myId) myId = state.myId;
+ 
+  // switch to game screen on first state if in a lobby
+  if (lobbyCode && !document.getElementById('game-screen').classList.contains('active')) {
     document.getElementById('lobby-screen').classList.remove('active');
     document.getElementById('game-screen').classList.add('active');
     document.getElementById('hud-code').textContent = state.code;
     renderedCards['dealer'] = 0;
     for (const id of state.order) renderedCards[id] = 0;
   }
-
-  // update waiting list in lobby if still there
-  if (state.phase === 'betting' && !document.getElementById('game-screen').classList.contains('active')) {
-    updateWaitingList(state);
-    return;
-  }
-
+ 
   lastState = state;
   renderState(state);
 });
-
+ 
 socket.on('round_results', (results) => {
   showResults(results);
 });
-
+ 
 // ─── WAITING LIST ──────────────────────────────────────────────────
 function updateWaitingList(state) {
   const wl = document.getElementById('waiting-list');
@@ -582,7 +582,7 @@ function updateWaitingList(state) {
     return `<div class="wdot"><span class="dot-g"></span>${p.name}${isMe ? ' (you)' : ''}</div>`;
   }).join('');
 }
-
+ 
 // ─── BET ───────────────────────────────────────────────────────────
 function addBet(amount) {
   if (!lastState || lastState.phase !== 'betting') return;
@@ -593,7 +593,7 @@ function addBet(amount) {
   document.getElementById('bet-amount').textContent = fmt(myBet);
   socket.emit('place_bet', { amount: myBet });
 }
-
+ 
 function clearBet() {
   if (!lastState || lastState.phase !== 'betting') return;
   const me = lastState.players[myId];
@@ -602,7 +602,7 @@ function clearBet() {
   document.getElementById('bet-amount').textContent = '0';
   socket.emit('place_bet', { amount: 0 });
 }
-
+ 
 function setReady() {
   if (!lastState || lastState.phase !== 'betting') return;
   if (myBet <= 0) { shakeBet(); setStatus('Place a bet first!', true); return; }
@@ -613,42 +613,42 @@ function setReady() {
   btn.disabled = true;
   document.querySelectorAll('.chip').forEach(c => c.disabled = true);
 }
-
+ 
 // ─── PLAY ACTIONS ──────────────────────────────────────────────────
 function doHit()    { socket.emit('hit'); }
 function doStand()  { socket.emit('stand'); }
 function doDouble() { socket.emit('double_down'); }
-
+ 
 // ─── RENDER STATE ──────────────────────────────────────────────────
 function renderState(state) {
   const me = state.players[myId];
   if (!me) return;
-
+ 
   // hud
   document.getElementById('hud-balance').textContent = fmt(me.balance);
   document.getElementById('deck-count').textContent = state.deckSize + ' cards';
   document.getElementById('hud-phase').textContent = phaseLabel(state.phase);
-
+ 
   // dealer hand — only show score when not player turn
   renderDealerHand(state);
-
+ 
   // other players seats
   renderPlayerSeats(state);
-
+ 
   // my hand
   renderMyHand(state, me);
-
+ 
   // status
   updateStatus(state, me);
-
+ 
   // buttons
   updateButtons(state, me);
 }
-
+ 
 function phaseLabel(p) {
   return { waiting:'Waiting', betting:'Place bets', playing:'Playing', dealer:"Dealer's turn", done:'Round over' }[p] || p;
 }
-
+ 
 // ─── DEALER ────────────────────────────────────────────────────────
 function renderDealerHand(state) {
   const hand = state.dealerHandHidden || state.dealerHand;
@@ -656,14 +656,14 @@ function renderDealerHand(state) {
   const scoreEl = document.getElementById('dealer-score');
   const key = 'dealer';
   const alreadyRendered = renderedCards[key] || 0;
-
+ 
   // append only new cards
   hand.forEach((card, i) => {
     if (i < alreadyRendered) return;
     container.appendChild(buildCard(card, true));
   });
   renderedCards[key] = hand.length;
-
+ 
   // if a hidden card is being revealed (phase changed from playing→dealer)
   // replace the placeholder back card with the real card
   if (state.phase !== 'playing' && state.dealerHand.length >= 2) {
@@ -685,7 +685,7 @@ function renderDealerHand(state) {
       renderedCards[key] = drawn;
     }
   }
-
+ 
   // score — only show when dealer phase or done
   const showScore = state.phase === 'dealer' || state.phase === 'done';
   if (showScore && state.dealerHand.length > 0) {
@@ -696,12 +696,12 @@ function renderDealerHand(state) {
     scoreEl.className = 'score-badge';
   }
 }
-
+ 
 // ─── OTHER PLAYER SEATS ────────────────────────────────────────────
 function renderPlayerSeats(state) {
   const others = state.order.filter(id => id !== myId);
   const container = document.getElementById('player-seats');
-
+ 
   // build seats that don't exist yet
   others.forEach((id, idx) => {
     if (!document.getElementById('seat-' + id)) {
@@ -721,21 +721,21 @@ function renderPlayerSeats(state) {
       container.appendChild(el);
       renderedCards[id] = 0;
     }
-
+ 
     const p = state.players[id];
     if (!p) return;
-
+ 
     // name + dot
     document.getElementById('sname-' + id).textContent = p.name;
     const dotEl = document.getElementById('sdot-' + id);
     dotEl.className = 'sdot ' + statusDot(p.status);
-
+ 
     // seat glow
     const seatEl = document.getElementById('seat-' + id);
     seatEl.className = 'seat' +
       (state.currentTurn === id ? ' is-turn' : '') +
       (p.status === 'bust' ? ' is-bust' : '');
-
+ 
     // hand — append only new cards
     const handEl = document.getElementById('shand-' + id);
     const already = renderedCards[id] || 0;
@@ -744,7 +744,7 @@ function renderPlayerSeats(state) {
       handEl.appendChild(buildCard(card, false));
     });
     renderedCards[id] = p.hand.length;
-
+ 
     // score
     const scoreEl = document.getElementById('sscore-' + id);
     if (p.hand.length > 0) {
@@ -754,31 +754,31 @@ function renderPlayerSeats(state) {
     } else {
       scoreEl.className = 'score-badge';
     }
-
+ 
     // action label
     const actionEl = document.getElementById('saction-' + id);
     const actionMap = { 'bust':'💥 bust', 'stood':'stand', 'playing':'playing…', 'ready':'ready ✓', 'waiting':'waiting', 'done':'' };
     actionEl.textContent = actionMap[p.status] || p.status;
     actionEl.style.color = p.status === 'bust' ? '#f87171' : p.status === 'ready' ? '#4ade80' : 'rgba(254,249,236,0.35)';
-
+ 
     // bet + balance
     document.getElementById('sbet-' + id).textContent = p.bet ? '₮ ' + fmt(p.bet) : '';
     document.getElementById('sbal-' + id).textContent = '₮ ' + fmt(p.balance);
   });
 }
-
+ 
 // ─── MY HAND ───────────────────────────────────────────────────────
 function renderMyHand(state, me) {
   const container = document.getElementById('my-hand');
   const scoreEl = document.getElementById('my-score');
   const already = renderedCards[myId] || 0;
-
+ 
   me.hand.forEach((card, i) => {
     if (i < already) return;
     container.appendChild(buildCard(card, false));
   });
   renderedCards[myId] = me.hand.length;
-
+ 
   if (me.hand.length > 0) {
     const v = handValue(me.hand);
     scoreEl.textContent = v;
@@ -787,7 +787,7 @@ function renderMyHand(state, me) {
     scoreEl.className = 'score-badge my-score';
   }
 }
-
+ 
 // ─── STATUS & BUTTONS ──────────────────────────────────────────────
 function updateStatus(state, me) {
   let msg = '', hi = false;
@@ -809,18 +809,18 @@ function updateStatus(state, me) {
   }
   setStatus(msg, hi);
 }
-
+ 
 function updateButtons(state, me) {
   const isBetting = state.phase === 'betting' && !me.ready;
   const isMyTurn = state.phase === 'playing' && state.currentTurn === myId && me.status === 'playing';
-
+ 
   document.getElementById('bet-ui').classList.toggle('hid', !isBetting);
   document.getElementById('play-ui').classList.toggle('hid', !isMyTurn);
-
+ 
   if (isMyTurn) {
     document.getElementById('btn-dbl').disabled = me.balance < me.bet;
   }
-
+ 
   // reset ready button if new betting phase
   if (isBetting) {
     const btn = document.getElementById('ready-btn');
@@ -834,20 +834,20 @@ function updateButtons(state, me) {
     }
   }
 }
-
+ 
 // ─── RESULTS ───────────────────────────────────────────────────────
 function showResults(results) {
   const me = results[myId];
   if (!me) return;
-
+ 
   const icons = { blackjack:'🎰', win:'🏆', push:'🤝', lose:'😞', bust:'💀' };
   const titles = { blackjack:'Blackjack!', win:'You win!', push:'Push', lose:'Dealer wins', bust:'Bust!' };
   const cls = { blackjack:'c-win', win:'c-win', push:'c-push', lose:'c-lose', bust:'c-lose' };
-
+ 
   const net = me.net;
   const changeStr = net === 0 ? '±0 coins' : net > 0 ? `+${fmt(net)} coins` : `${fmt(net)} coins`;
   const changeCls = net > 0 ? 'c-pos' : net === 0 ? 'c-neu' : 'c-neg';
-
+ 
   // all players results
   let othersHtml = '';
   if (lastState) {
@@ -863,7 +863,7 @@ function showResults(results) {
       }).join('') + `</div>`;
     }
   }
-
+ 
   const wrap = document.createElement('div');
   wrap.className = 'result-overlay';
   wrap.innerHTML = `
@@ -876,7 +876,7 @@ function showResults(results) {
     </div>
   `;
   document.getElementById('game-screen').appendChild(wrap);
-
+ 
   // auto remove after 5s (new round resets state)
   setTimeout(() => {
     wrap.remove();
@@ -888,7 +888,7 @@ function showResults(results) {
     document.querySelectorAll('.hand-area[id^="shand-"]').forEach(el => el.innerHTML = '');
   }, 5500);
 }
-
+ 
 // ─── CARD BUILDER ──────────────────────────────────────────────────
 function buildCard(card, isDealer, flip = false) {
   const el = document.createElement('div');
@@ -908,7 +908,7 @@ function buildCard(card, isDealer, flip = false) {
   }
   return el;
 }
-
+ 
 // ─── SEAT POSITIONS ────────────────────────────────────────────────
 // positions in px relative to viewport, centered around table oval
 function seatPosition(idx, total) {
@@ -922,15 +922,15 @@ function seatPosition(idx, total) {
   const arc = (angles[total] || [270]);
   const deg = arc[idx] ?? 270;
   const rad = deg * Math.PI / 180;
-
+ 
   const cx = window.innerWidth / 2;
   const cy = window.innerHeight * 0.46;
   const rx = Math.min(310, window.innerWidth * 0.42);
   const ry = Math.min(220, window.innerHeight * 0.26);
-
+ 
   return { x: cx + rx * Math.cos(rad), y: cy + ry * Math.sin(rad) };
 }
-
+ 
 // ─── HELPERS ───────────────────────────────────────────────────────
 function handValue(hand) {
   let t = 0, a = 0;
@@ -943,19 +943,19 @@ function handValue(hand) {
   while (t > 21 && a > 0) { t -= 10; a--; }
   return t;
 }
-
+ 
 function fmt(n) { return Number(n).toLocaleString('en-US'); }
-
+ 
 function setStatus(msg, hi = false) {
   const el = document.getElementById('status-line');
   el.textContent = msg;
   el.className = 'status-line' + (hi ? ' hi' : '');
 }
-
+ 
 function statusDot(status) {
   return { waiting:'sd-w', ready:'sd-r', playing:'sd-p', stood:'sd-d', bust:'sd-d', done:'sd-d' }[status] || 'sd-w';
 }
-
+ 
 function shakeBet() {
   const el = document.querySelector('.bet-display');
   el.style.animation = 'none';
