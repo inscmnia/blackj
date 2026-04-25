@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Felt — Blackjack</title>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#d4a843;--gold2:#f5c842;--gold3:#8a6c1a;
+  --red:#c0392b;--cream:#fef9ec;
+  --felt:#1a4f2e;--felt2:#0f2d1a;
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:#060e08;color:var(--cream);}
+
+/* ══════════════ SCREENS ══════════════ */
+.screen{display:none;width:100%;height:100vh;flex-direction:column;align-items:center;justify-content:center;}
+.screen.active{display:flex;}
+
+/* ══════════════ LOBBY SCREEN ══════════════ */
+#lobby-screen{background:linear-gradient(160deg,#0d1f13 0%,#060e08 100%);padding:2rem;}
+.logo{text-align:center;margin-bottom:2.5rem;}
+.logo h1{
+  font-family:'Syne',sans-serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:800;
+  background:linear-gradient(135deg,#6b4f10,#d4a843,#f5c842,#d4a843,#6b4f10);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:-0.02em;
+}
+.logo p{color:rgba(254,249,236,0.28);font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;margin-top:0.5rem;}
+.lobby-card{
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(212,168,67,0.14);
+  border-radius:28px;padding:2.5rem;width:100%;max-width:460px;
+}
+.field{margin-bottom:1.1rem;}
+.field label{display:block;font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(254,249,236,0.3);margin-bottom:0.45rem;}
+.field input{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(212,168,67,0.15);border-radius:14px;
+  padding:0.85rem 1.1rem;color:var(--cream);
+  font-family:'Inter',sans-serif;font-size:0.95rem;outline:none;
+  transition:border-color 0.25s;
+}
+.field input:focus{border-color:rgba(212,168,67,0.5);}
+.field input::placeholder{color:rgba(254,249,236,0.15);}
+.sep{text-align:center;color:rgba(254,249,236,0.18);font-size:0.7rem;margin:1.1rem 0;position:relative;}
+.sep::before,.sep::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:rgba(212,168,67,0.09);}
+.sep::before{left:0;}.sep::after{right:0;}
+.btn{
+  width:100%;padding:1rem;border:none;border-radius:14px;
+  font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;
+}
+.btn:active{transform:scale(0.98);}
+.btn-gold{
+  background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));
+  color:#1a0e00;
+  box-shadow:0 5px 0 #4a3200,0 8px 20px rgba(212,168,67,0.25);
+}
+.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-gold:active{box-shadow:0 1px 0 #4a3200;transform:translateY(3px);}
+.btn-outline{background:transparent;border:1px solid rgba(212,168,67,0.25);color:var(--gold);margin-top:0.7rem;}
+.btn-outline:hover{background:rgba(212,168,67,0.06);}
+.lobby-code-box{
+  background:rgba(212,168,67,0.06);border:1px dashed rgba(212,168,67,0.25);
+  border-radius:14px;padding:1.2rem;text-align:center;margin-top:1rem;display:none;
+}
+.lobby-code-big{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--gold);letter-spacing:0.3em;}
+.lobby-code-box p{font-size:0.65rem;color:rgba(254,249,236,0.25);margin-top:0.3rem;}
+.waiting-list{margin-top:0.85rem;display:none;}
+.wdot{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);padding:5px 13px;border-radius:20px;font-size:0.76rem;margin:3px;border:1px solid rgba(255,255,255,0.07);}
+.dot-g{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;}
+.dot-y{width:6px;height:6px;border-radius:50%;background:#eab308;box-shadow:0 0 6px #eab308;}
+.err-msg{color:#f87171;font-size:0.8rem;text-align:center;margin-top:0.7rem;min-height:1.2rem;}
+
+/* ══════════════ GAME SCREEN ══════════════ */
+#game-screen{
+  position:relative;padding:0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 35%,#1a3d28 0%,#0b2016 55%,#04100a 100%);
+}
+
+/* subtle grid */
+#game-screen::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(255,255,255,0.006) 48px,rgba(255,255,255,0.006) 49px),
+    repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(255,255,255,0.006) 48px,rgba(255,255,255,0.006) 49px);
+  pointer-events:none;z-index:0;
+}
+
+/* ── FELT TABLE ── */
+.table-wrap{
+  position:absolute;
+  left:50%;top:48%;
+  transform:translate(-50%,-50%);
+  width:min(680px,94vw);
+  height:min(500px,62vw);
+  z-index:1;
+}
+.felt-shadow{
+  position:absolute;inset:-18px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.55);
+  filter:blur(22px);
+}
+.felt-oval{
+  position:absolute;inset:0;
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse at 50% 38%,#2a6b42 0%,#1a4a2a 45%,#0f2d1a 80%,#082014 100%);
+  border:8px solid rgba(212,168,67,0.22);
+  box-shadow:
+    0 0 0 2px rgba(212,168,67,0.08),
+    inset 0 0 60px rgba(0,0,0,0.35),
+    inset 0 0 120px rgba(0,0,0,0.2);
+}
+/* inner rail line */
+.felt-oval::before{
+  content:'';position:absolute;
+  inset:12px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.1);
+}
+.felt-oval::after{
+  content:'BLACKJACK PAYS 3 : 2';
+  position:absolute;top:52%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Syne',sans-serif;font-weight:700;
+  font-size:clamp(0.45rem,1vw,0.6rem);
+  letter-spacing:0.35em;
+  color:rgba(212,168,67,0.18);
+  white-space:nowrap;
+}
+
+/* ── HUD ── */
+.hud{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0.7rem 1rem;z-index:20;
+}
+.hud-bal{
+  background:rgba(0,0,0,0.6);border:1px solid rgba(212,168,67,0.2);
+  border-radius:40px;padding:0.45rem 1.1rem;
+  font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--gold);
+  display:flex;align-items:center;gap:5px;
+}
+.hud-bal span.lbl{font-size:0.58rem;opacity:0.4;font-family:'Inter',sans-serif;}
+.hud-mid{display:flex;gap:0.5rem;align-items:center;}
+.hud-code{
+  background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;padding:0.3rem 0.85rem;
+  font-size:0.68rem;color:rgba(254,249,236,0.35);letter-spacing:0.18em;
+  font-family:'Syne',sans-serif;
+}
+.hud-phase{
+  font-size:0.65rem;color:rgba(254,249,236,0.3);
+  letter-spacing:0.15em;text-transform:uppercase;
+}
+.btn-leave{
+  background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.22);
+  color:#f87171;border-radius:20px;padding:0.3rem 0.85rem;
+  font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-weight:500;
+}
+.btn-leave:hover{background:rgba(220,38,38,0.2);}
+
+/* deck indicator */
+.deck-pile{position:absolute;top:0.9rem;right:1rem;z-index:20;}
+.deck-cards{width:46px;height:64px;position:relative;}
+.deck-card{position:absolute;width:44px;height:62px;border-radius:6px;background:linear-gradient(145deg,#1a2464,#6b1111,#1a2464);border:1px solid rgba(255,255,255,0.1);box-shadow:2px 2px 7px rgba(0,0,0,0.6);}
+.deck-count{text-align:center;font-size:0.55rem;color:rgba(254,249,236,0.25);margin-top:4px;letter-spacing:0.05em;}
+
+/* ── SEATS ── */
+.seat{
+  position:absolute;z-index:5;
+  display:flex;flex-direction:column;align-items:center;
+  transition:filter 0.4s;
+}
+.seat.my-seat{z-index:6;}
+.seat.is-turn{filter:drop-shadow(0 0 14px rgba(212,168,67,0.5));}
+.seat.is-bust .seat-name-row{opacity:0.5;}
+
+.seat-name-row{
+  display:flex;align-items:center;gap:5px;
+  font-size:0.7rem;color:rgba(254,249,236,0.5);
+  margin-bottom:3px;white-space:nowrap;transition:color 0.3s;
+}
+.seat.is-turn .seat-name-row{color:var(--gold2);}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background 0.3s,box-shadow 0.3s;}
+.sd-w{background:#374151;}.sd-r{background:#22c55e;box-shadow:0 0 5px #22c55e;}.sd-p{background:#eab308;box-shadow:0 0 5px #eab308;}.sd-d{background:#374151;}
+
+.hand-area{display:flex;align-items:center;justify-content:center;min-height:90px;position:relative;}
+.seat-score{
+  font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;
+  color:var(--gold);margin-top:3px;min-height:18px;text-align:center;
+}
+.seat-action{
+  font-size:0.62rem;font-style:italic;min-height:14px;
+  text-align:center;transition:color 0.3s;
+}
+.seat-bet-info{font-size:0.62rem;color:rgba(212,168,67,0.55);min-height:14px;text-align:center;}
+.seat-bal-info{font-size:0.6rem;color:rgba(254,249,236,0.25);text-align:center;}
+
+/* ── CARDS ── */
+.card{
+  width:58px;height:84px;border-radius:9px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.07);
+  box-shadow:
+    3px 5px 14px rgba(0,0,0,0.55),
+    0 2px 4px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.95);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;
+  position:relative;margin-left:-13px;flex-shrink:0;
+  transition:transform 0.25s ease;
+}
+.card:first-child{margin-left:0;}
+.card:hover{transform:translateY(-6px) rotate(2deg);z-index:10;}
+.card.deal-in{
+  animation:dealIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes dealIn{
+  0%{opacity:0;transform:translateY(-90px) translateX(55px) rotate(-22deg) scale(0.65);}
+  55%{opacity:1;}
+  100%{opacity:1;transform:translateY(0) translateX(0) rotate(0deg) scale(1);}
+}
+.card.flip-in{animation:flipIn 0.45s cubic-bezier(0.22,1,0.36,1) both;}
+@keyframes flipIn{
+  0%{transform:rotateY(90deg) scale(0.85);opacity:0.2;}
+  100%{transform:rotateY(0deg) scale(1);opacity:1;}
+}
+.crank{font-size:1.2rem;font-weight:800;line-height:1;}
+.csuit{font-size:1.05rem;line-height:1;margin-top:1px;}
+.card.cr .crank,.card.cr .csuit{color:var(--red);}
+.card.cb .crank,.card.cb .csuit{color:#1a1a2e;}
+.ccorn{position:absolute;top:4px;left:5px;font-size:0.52rem;font-weight:800;display:flex;flex-direction:column;align-items:center;line-height:1.1;}
+.ccorn.bl{top:auto;bottom:4px;left:auto;right:5px;transform:rotate(180deg);}
+.card-back{background:linear-gradient(145deg,#1a2464 0%,#6b1111 50%,#1a2464 100%);border:1px solid rgba(255,255,255,0.1);}
+.card-back-inner{width:44px;height:68px;border-radius:5px;border:2px solid rgba(255,255,255,0.12);background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 2px,transparent 2px,transparent 8px);}
+
+/* my cards bigger */
+.my-seat .card{width:68px;height:98px;border-radius:11px;margin-left:-15px;}
+.my-seat .card:first-child{margin-left:0;}
+.my-seat .crank{font-size:1.4rem;}
+.my-seat .csuit{font-size:1.25rem;}
+.my-seat .ccorn{font-size:0.6rem;}
+.my-seat .card-back-inner{width:54px;height:80px;}
+
+/* score badge */
+.score-badge{
+  display:none;
+  background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.1);
+  border-radius:30px;padding:3px 14px;
+  font-size:0.85rem;font-weight:700;color:var(--cream);
+  font-family:'Syne',sans-serif;margin-top:4px;
+}
+.score-badge.show{display:inline-block;}
+.score-badge.bust{border-color:rgba(239,68,68,0.5);color:#f87171;}
+.score-badge.bj{border-color:rgba(212,168,67,0.7);color:var(--gold);}
+
+/* ── DEALER SEAT ── */
+.dealer-seat{
+  position:absolute;top:8px;left:50%;
+  transform:translateX(-50%);
+  z-index:5;display:flex;flex-direction:column;align-items:center;
+}
+.dealer-label{
+  font-size:0.58rem;letter-spacing:0.24em;text-transform:uppercase;
+  color:rgba(254,249,236,0.25);margin-bottom:4px;
+}
+
+/* ── BOTTOM PANEL ── */
+.bottom-panel{
+  position:absolute;bottom:0;left:0;right:0;z-index:15;
+  background:linear-gradient(to top,rgba(4,10,6,0.97) 0%,rgba(4,10,6,0.82) 70%,transparent 100%);
+  padding:0.65rem 1rem 0.9rem;
+  display:flex;flex-direction:column;align-items:center;gap:0.55rem;
+}
+.status-line{
+  font-size:0.7rem;letter-spacing:0.12em;color:rgba(254,249,236,0.3);
+  text-align:center;min-height:18px;transition:color 0.3s;
+}
+.status-line.hi{color:var(--gold);}
+
+/* score+hand row */
+.my-hand-row{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;justify-content:center;}
+.my-score{
+  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;
+  color:var(--gold);display:none;
+}
+.my-score.show{display:block;}
+
+/* BET ROW */
+.bet-row{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
+.bet-display{
+  background:rgba(0,0,0,0.55);border:1px solid rgba(212,168,67,0.18);
+  border-radius:14px;padding:0.42rem 1.2rem;
+  display:flex;align-items:center;gap:0.55rem;
+}
+.bet-lbl{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.18em;color:rgba(254,249,236,0.28);}
+.bet-amt{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--gold);}
+
+/* CHIPS */
+.chips-row{display:flex;gap:0.42rem;align-items:center;justify-content:center;flex-wrap:wrap;}
+.chip{
+  width:56px;height:56px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:0.68rem;font-family:'Syne',sans-serif;
+  position:relative;user-select:none;
+  transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.18s;
+  border:none;outline:none;
+}
+.chip::before{content:'';position:absolute;inset:3px;border-radius:50%;border:3px dashed rgba(255,255,255,0.26);}
+.chip::after{content:'';position:absolute;inset:11px;border-radius:50%;border:1.5px dashed rgba(255,255,255,0.12);}
+.chip:hover{transform:translateY(-5px) scale(1.09);}
+.chip:active{transform:scale(0.93);}
+.chip:disabled{opacity:0.25;cursor:not-allowed;transform:none;}
+
+.ch5{background:radial-gradient(circle at 35% 30%,#ff7070,#dc2626 55%,#7f1d1d);box-shadow:0 6px 0 #7a0d0d,0 8px 16px rgba(220,38,38,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.ch5:hover{box-shadow:0 10px 0 #7a0d0d,0 14px 22px rgba(220,38,38,0.5);}
+.ch5:active{box-shadow:0 2px 0 #7a0d0d;}
+.ch25{background:radial-gradient(circle at 35% 30%,#4ade80,#16a34a 55%,#14532d);box-shadow:0 6px 0 #0d4020,0 8px 16px rgba(22,163,74,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.ch25:hover{box-shadow:0 10px 0 #0d4020,0 14px 22px rgba(22,163,74,0.5);}
+.ch25:active{box-shadow:0 2px 0 #0d4020;}
+.ch100{background:radial-gradient(circle at 35% 30%,#60a5fa,#2563eb 55%,#1e3a8a);box-shadow:0 6px 0 #122270,0 8px 16px rgba(37,99,235,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.ch100:hover{box-shadow:0 10px 0 #122270,0 14px 22px rgba(37,99,235,0.5);}
+.ch100:active{box-shadow:0 2px 0 #122270;}
+.ch500{background:radial-gradient(circle at 35% 30%,#c084fc,#9333ea 55%,#581c87);box-shadow:0 6px 0 #3b0d6b,0 8px 16px rgba(147,51,234,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.ch500:hover{box-shadow:0 10px 0 #3b0d6b,0 14px 22px rgba(147,51,234,0.5);}
+.ch500:active{box-shadow:0 2px 0 #3b0d6b;}
+.ch1k{background:radial-gradient(circle at 35% 30%,#fbbf24,#d97706 55%,#78350f);box-shadow:0 6px 0 #5a2200,0 8px 16px rgba(217,119,6,0.4),inset 0 2px 3px rgba(255,255,255,0.25);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.ch1k:hover{box-shadow:0 10px 0 #5a2200,0 14px 22px rgba(217,119,6,0.5);}
+.ch1k:active{box-shadow:0 2px 0 #5a2200;}
+
+/* ACTION BUTTONS */
+.action-row{display:flex;gap:0.45rem;flex-wrap:wrap;justify-content:center;}
+.abtn{
+  padding:0.82rem 1.5rem;border:none;border-radius:50px;
+  font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;
+  position:relative;min-width:90px;
+}
+.abtn:active{transform:scale(0.96);}
+.abtn:disabled{opacity:0.22;cursor:not-allowed;transform:none;}
+.a-ready{background:linear-gradient(135deg,#15803d,#22c55e,#4ade80);color:#052e16;box-shadow:0 5px 0 #0d4020,0 7px 18px rgba(34,197,94,0.3),inset 0 1px 0 rgba(255,255,255,0.28);padding:0.9rem 2rem;font-size:0.92rem;}
+.a-ready:hover:not(:disabled){box-shadow:0 8px 0 #0d4020,0 12px 26px rgba(34,197,94,0.42);}
+.a-ready:active:not(:disabled){box-shadow:0 1px 0 #0d4020;transform:translateY(3px);}
+.a-ready.waiting{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#4ade80;box-shadow:none;cursor:default;}
+.a-hit{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 5px 0 #0d4020,0 7px 16px rgba(34,197,94,0.3),inset 0 1px 0 rgba(255,255,255,0.25);}
+.a-hit:hover:not(:disabled){box-shadow:0 8px 0 #0d4020,0 12px 22px rgba(34,197,94,0.42);}
+.a-hit:active:not(:disabled){box-shadow:0 1px 0 #0d4020;transform:translateY(3px);}
+.a-stand{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 5px 0 #7f1d1d,0 7px 16px rgba(239,68,68,0.3),inset 0 1px 0 rgba(255,255,255,0.25);}
+.a-stand:hover:not(:disabled){box-shadow:0 8px 0 #7f1d1d,0 12px 22px rgba(239,68,68,0.42);}
+.a-stand:active:not(:disabled){box-shadow:0 1px 0 #7f1d1d;transform:translateY(3px);}
+.a-dbl{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;box-shadow:0 5px 0 #0c4a6e,0 7px 16px rgba(56,189,248,0.3),inset 0 1px 0 rgba(255,255,255,0.25);}
+.a-dbl:hover:not(:disabled){box-shadow:0 8px 0 #0c4a6e,0 12px 22px rgba(56,189,248,0.42);}
+.a-dbl:active:not(:disabled){box-shadow:0 1px 0 #0c4a6e;transform:translateY(3px);}
+.a-clear{background:rgba(255,255,255,0.06);color:rgba(254,249,236,0.5);border:1px solid rgba(255,255,255,0.09);box-shadow:none;}
+.a-clear:hover:not(:disabled){background:rgba(255,255,255,0.1);}
+
+/* RESULT OVERLAY */
+.result-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.72);z-index:50;
+  animation:fadeIn 0.3s ease both;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.result-card{
+  background:linear-gradient(160deg,#1a1a1a,#222);
+  border:1px solid rgba(212,168,67,0.22);border-radius:28px;
+  padding:2.2rem 3rem;text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,0.9);min-width:270px;
+  animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1}}
+.res-icon{font-size:3rem;margin-bottom:0.4rem;line-height:1;}
+.res-title{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;margin-bottom:0.3rem;}
+.res-detail{color:rgba(254,249,236,0.35);font-size:0.82rem;margin-bottom:0.9rem;}
+.res-change{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:1.4rem;}
+.c-win{color:var(--gold)}.c-lose{color:#ef4444}.c-push{color:#38bdf8}
+.c-pos{color:#22c55e}.c-neg{color:#ef4444}.c-neu{color:#38bdf8}
+
+/* ALL RESULTS TABLE */
+.all-results{margin-top:0.8rem;border-top:1px solid rgba(255,255,255,0.07);padding-top:0.8rem;}
+.all-results-row{display:flex;justify-content:space-between;gap:1.5rem;font-size:0.78rem;margin-bottom:0.35rem;}
+.all-results-row .name{color:rgba(254,249,236,0.5);}
+.all-results-row .outcome{font-family:'Syne',sans-serif;font-weight:700;}
+
+.hid{display:none!important;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOBBY ══════════════ -->
+<div id="lobby-screen" class="screen active">
+  <div class="logo"><h1>ROYAL FELT</h1><p>Private Blackjack Lounge</p></div>
+  <div class="lobby-card">
+    <div class="field"><label>Your nickname</label><input id="inp-name" type="text" placeholder="Enter name…" maxlength="20"></div>
+    <button class="btn btn-gold" onclick="createLobby()">Create lobby</button>
+
+    <div id="created-box" class="lobby-code-box">
+      <div style="font-size:0.6rem;letter-spacing:0.22em;color:rgba(254,249,236,0.28);text-transform:uppercase;margin-bottom:0.3rem;">Lobby code</div>
+      <div class="lobby-code-big" id="show-code">----</div>
+      <p>Share this code with your friends</p>
+      <div id="waiting-list" class="waiting-list"></div>
+    </div>
+
+    <div class="sep">or join a friend</div>
+
+    <div class="field"><label>Lobby code</label><input id="inp-code" type="text" placeholder="e.g. XKQR" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
+    <button class="btn btn-outline" onclick="joinLobby()">Join lobby</button>
+    <div class="err-msg" id="err-msg"></div>
+  </div>
+</div>
+
+<!-- ══════════════ GAME ══════════════ -->
+<div id="game-screen" class="screen">
+  <!-- felt table -->
+  <div class="table-wrap">
+    <div class="felt-shadow"></div>
+    <div class="felt-oval"></div>
+  </div>
+
+  <!-- hud -->
+  <div class="hud">
+    <div class="hud-bal"><span class="lbl">₮</span><span id="hud-balance">5,000</span></div>
+    <div class="hud-mid">
+      <div class="hud-code" id="hud-code">——</div>
+      <div class="hud-phase" id="hud-phase"></div>
+    </div>
+    <button class="btn-leave" onclick="leaveLobby()">Leave</button>
+  </div>
+
+  <!-- deck -->
+  <div class="deck-pile">
+    <div class="deck-cards">
+      <div class="deck-card" style="top:5px;left:2px;"></div>
+      <div class="deck-card" style="top:2px;left:1px;"></div>
+      <div class="deck-card" style="top:0;left:0;"></div>
+    </div>
+    <div class="deck-count" id="deck-count">— cards</div>
+  </div>
+
+  <!-- dealer -->
+  <div class="dealer-seat">
+    <div class="dealer-label">Dealer</div>
+    <div class="hand-area" id="dealer-hand"></div>
+    <div class="score-badge" id="dealer-score"></div>
+  </div>
+
+  <!-- player seats rendered by JS -->
+  <div id="player-seats"></div>
+
+  <!-- bottom panel -->
+  <div class="bottom-panel">
+    <div class="status-line" id="status-line"></div>
+
+    <div class="my-hand-row">
+      <div class="score-badge my-score" id="my-score"></div>
+      <div class="hand-area" id="my-hand" style="min-height:104px;"></div>
+    </div>
+
+    <!-- betting ui -->
+    <div id="bet-ui">
+      <div class="bet-row">
+        <div class="bet-display"><span class="bet-lbl">Bet</span><span class="bet-amt" id="bet-amount">0</span></div>
+        <div class="chips-row">
+          <button class="chip ch5"   onclick="addBet(5)">5</button>
+          <button class="chip ch25"  onclick="addBet(25)">25</button>
+          <button class="chip ch100" onclick="addBet(100)">100</button>
+          <button class="chip ch500" onclick="addBet(500)">500</button>
+          <button class="chip ch1k"  onclick="addBet(1000)">1K</button>
+        </div>
+      </div>
+      <div class="action-row" style="margin-top:0.5rem;">
+        <button class="abtn a-clear" onclick="clearBet()">Clear</button>
+        <button class="abtn a-ready" id="ready-btn" onclick="setReady()">Ready ✓</button>
+      </div>
+    </div>
+
+    <!-- play ui -->
+    <div id="play-ui" class="hid">
+      <div class="action-row">
+        <button class="abtn a-hit"   id="btn-hit"   onclick="doHit()">Hit ♦</button>
+        <button class="abtn a-stand" id="btn-stand" onclick="doStand()">Stand ♣</button>
+        <button class="abtn a-dbl"   id="btn-dbl"   onclick="doDouble()">Double ♥</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── SOCKET ────────────────────────────────────────────────────────
+const socket = io();
+let myId = null;
+let myBet = 0;
+let lobbyCode = null;
+let lastState = null;
+const RED_SUITS = new Set(['♥', '♦']);
+
+// track which card elements already exist per hand, to avoid re-animating
+const renderedCards = {}; // seatKey -> count
+
+// ─── LOBBY LOGIC ───────────────────────────────────────────────────
+function createLobby() {
+  const name = document.getElementById('inp-name').value.trim() || 'Player';
+  socket.emit('create_lobby', { name });
+}
+
+function joinLobby() {
+  const name = document.getElementById('inp-name').value.trim() || 'Player';
+  const code = document.getElementById('inp-code').value.trim().toUpperCase();
+  if (code.length !== 4) { showErr('Enter a 4-character code'); return; }
+  socket.emit('join_lobby', { code, name });
+}
+
+function leaveLobby() {
+  socket.disconnect();
+  location.reload();
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3000);
+}
+
+// ─── SOCKET EVENTS ─────────────────────────────────────────────────
+socket.on('lobby_created', ({ code }) => {
+  lobbyCode = code;
+  document.getElementById('show-code').textContent = code;
+  document.getElementById('created-box').style.display = 'block';
+  const wl = document.getElementById('waiting-list');
+  wl.style.display = 'block';
+  wl.innerHTML = `<div class="wdot"><span class="dot-g"></span>You (host)</div>`;
+});
+
+socket.on('lobby_joined', ({ code }) => {
+  lobbyCode = code;
+});
+
+socket.on('error', (msg) => showErr(msg));
+
+socket.on('state', (state) => {
+  // first state = enter game
+  if (!myId && state.myId) {
+    myId = state.myId;
+    document.getElementById('lobby-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+    document.getElementById('hud-code').textContent = state.code;
+    renderedCards['dealer'] = 0;
+    for (const id of state.order) renderedCards[id] = 0;
+  }
+
+  // update waiting list in lobby if still there
+  if (state.phase === 'betting' && !document.getElementById('game-screen').classList.contains('active')) {
+    updateWaitingList(state);
+    return;
+  }
+
+  lastState = state;
+  renderState(state);
+});
+
+socket.on('round_results', (results) => {
+  showResults(results);
+});
+
+// ─── WAITING LIST ──────────────────────────────────────────────────
+function updateWaitingList(state) {
+  const wl = document.getElementById('waiting-list');
+  if (!wl) return;
+  wl.style.display = 'block';
+  wl.innerHTML = state.order.map(id => {
+    const p = state.players[id];
+    const isMe = id === myId;
+    return `<div class="wdot"><span class="dot-g"></span>${p.name}${isMe ? ' (you)' : ''}</div>`;
+  }).join('');
+}
+
+// ─── BET ───────────────────────────────────────────────────────────
+function addBet(amount) {
+  if (!lastState || lastState.phase !== 'betting') return;
+  const me = lastState.players[myId];
+  if (!me || me.ready) return;
+  const max = me.balance;
+  myBet = Math.min(myBet + amount, max);
+  document.getElementById('bet-amount').textContent = fmt(myBet);
+  socket.emit('place_bet', { amount: myBet });
+}
+
+function clearBet() {
+  if (!lastState || lastState.phase !== 'betting') return;
+  const me = lastState.players[myId];
+  if (!me || me.ready) return;
+  myBet = 0;
+  document.getElementById('bet-amount').textContent = '0';
+  socket.emit('place_bet', { amount: 0 });
+}
+
+function setReady() {
+  if (!lastState || lastState.phase !== 'betting') return;
+  if (myBet <= 0) { shakeBet(); setStatus('Place a bet first!', true); return; }
+  socket.emit('set_ready', { bet: myBet });
+  const btn = document.getElementById('ready-btn');
+  btn.textContent = 'Waiting…';
+  btn.classList.add('waiting');
+  btn.disabled = true;
+  document.querySelectorAll('.chip').forEach(c => c.disabled = true);
+}
+
+// ─── PLAY ACTIONS ──────────────────────────────────────────────────
+function doHit()    { socket.emit('hit'); }
+function doStand()  { socket.emit('stand'); }
+function doDouble() { socket.emit('double_down'); }
+
+// ─── RENDER STATE ──────────────────────────────────────────────────
+function renderState(state) {
+  const me = state.players[myId];
+  if (!me) return;
+
+  // hud
+  document.getElementById('hud-balance').textContent = fmt(me.balance);
+  document.getElementById('deck-count').textContent = state.deckSize + ' cards';
+  document.getElementById('hud-phase').textContent = phaseLabel(state.phase);
+
+  // dealer hand — only show score when not player turn
+  renderDealerHand(state);
+
+  // other players seats
+  renderPlayerSeats(state);
+
+  // my hand
+  renderMyHand(state, me);
+
+  // status
+  updateStatus(state, me);
+
+  // buttons
+  updateButtons(state, me);
+}
+
+function phaseLabel(p) {
+  return { waiting:'Waiting', betting:'Place bets', playing:'Playing', dealer:"Dealer's turn", done:'Round over' }[p] || p;
+}
+
+// ─── DEALER ────────────────────────────────────────────────────────
+function renderDealerHand(state) {
+  const hand = state.dealerHandHidden || state.dealerHand;
+  const container = document.getElementById('dealer-hand');
+  const scoreEl = document.getElementById('dealer-score');
+  const key = 'dealer';
+  const alreadyRendered = renderedCards[key] || 0;
+
+  // append only new cards
+  hand.forEach((card, i) => {
+    if (i < alreadyRendered) return;
+    container.appendChild(buildCard(card, true));
+  });
+  renderedCards[key] = hand.length;
+
+  // if a hidden card is being revealed (phase changed from playing→dealer)
+  // replace the placeholder back card with the real card
+  if (state.phase !== 'playing' && state.dealerHand.length >= 2) {
+    const realHand = state.dealerHand;
+    const cards = container.querySelectorAll('.card');
+    cards.forEach((el, i) => {
+      if (el.classList.contains('card-back') && realHand[i] && realHand[i].r !== '?') {
+        // flip reveal
+        const newCard = buildCard(realHand[i], false, true);
+        container.replaceChild(newCard, el);
+      }
+    });
+    // also append dealer draw cards
+    const drawn = realHand.length;
+    if (drawn > renderedCards[key]) {
+      for (let i = renderedCards[key]; i < drawn; i++) {
+        container.appendChild(buildCard(realHand[i], false));
+      }
+      renderedCards[key] = drawn;
+    }
+  }
+
+  // score — only show when dealer phase or done
+  const showScore = state.phase === 'dealer' || state.phase === 'done';
+  if (showScore && state.dealerHand.length > 0) {
+    const dv = handValue(state.dealerHand);
+    scoreEl.textContent = dv;
+    scoreEl.className = 'score-badge show' + (dv > 21 ? ' bust' : dv === 21 && state.dealerHand.length === 2 ? ' bj' : '');
+  } else {
+    scoreEl.className = 'score-badge';
+  }
+}
+
+// ─── OTHER PLAYER SEATS ────────────────────────────────────────────
+function renderPlayerSeats(state) {
+  const others = state.order.filter(id => id !== myId);
+  const container = document.getElementById('player-seats');
+
+  // build seats that don't exist yet
+  others.forEach((id, idx) => {
+    if (!document.getElementById('seat-' + id)) {
+      const pos = seatPosition(idx, others.length);
+      const el = document.createElement('div');
+      el.className = 'seat';
+      el.id = 'seat-' + id;
+      el.style.cssText = `left:${pos.x}px;top:${pos.y}px;transform:translate(-50%,-50%);`;
+      el.innerHTML = `
+        <div class="seat-name-row"><span class="sdot sd-w" id="sdot-${id}"></span><span id="sname-${id}"></span></div>
+        <div class="hand-area" id="shand-${id}" style="min-height:90px;"></div>
+        <div class="score-badge" id="sscore-${id}"></div>
+        <div class="seat-action" id="saction-${id}"></div>
+        <div class="seat-bet-info" id="sbet-${id}"></div>
+        <div class="seat-bal-info" id="sbal-${id}"></div>
+      `;
+      container.appendChild(el);
+      renderedCards[id] = 0;
+    }
+
+    const p = state.players[id];
+    if (!p) return;
+
+    // name + dot
+    document.getElementById('sname-' + id).textContent = p.name;
+    const dotEl = document.getElementById('sdot-' + id);
+    dotEl.className = 'sdot ' + statusDot(p.status);
+
+    // seat glow
+    const seatEl = document.getElementById('seat-' + id);
+    seatEl.className = 'seat' +
+      (state.currentTurn === id ? ' is-turn' : '') +
+      (p.status === 'bust' ? ' is-bust' : '');
+
+    // hand — append only new cards
+    const handEl = document.getElementById('shand-' + id);
+    const already = renderedCards[id] || 0;
+    p.hand.forEach((card, ci) => {
+      if (ci < already) return;
+      handEl.appendChild(buildCard(card, false));
+    });
+    renderedCards[id] = p.hand.length;
+
+    // score
+    const scoreEl = document.getElementById('sscore-' + id);
+    if (p.hand.length > 0) {
+      const v = handValue(p.hand);
+      scoreEl.textContent = v;
+      scoreEl.className = 'score-badge show' + (v > 21 ? ' bust' : v === 21 && p.hand.length === 2 ? ' bj' : '');
+    } else {
+      scoreEl.className = 'score-badge';
+    }
+
+    // action label
+    const actionEl = document.getElementById('saction-' + id);
+    const actionMap = { 'bust':'💥 bust', 'stood':'stand', 'playing':'playing…', 'ready':'ready ✓', 'waiting':'waiting', 'done':'' };
+    actionEl.textContent = actionMap[p.status] || p.status;
+    actionEl.style.color = p.status === 'bust' ? '#f87171' : p.status === 'ready' ? '#4ade80' : 'rgba(254,249,236,0.35)';
+
+    // bet + balance
+    document.getElementById('sbet-' + id).textContent = p.bet ? '₮ ' + fmt(p.bet) : '';
+    document.getElementById('sbal-' + id).textContent = '₮ ' + fmt(p.balance);
+  });
+}
+
+// ─── MY HAND ───────────────────────────────────────────────────────
+function renderMyHand(state, me) {
+  const container = document.getElementById('my-hand');
+  const scoreEl = document.getElementById('my-score');
+  const already = renderedCards[myId] || 0;
+
+  me.hand.forEach((card, i) => {
+    if (i < already) return;
+    container.appendChild(buildCard(card, false));
+  });
+  renderedCards[myId] = me.hand.length;
+
+  if (me.hand.length > 0) {
+    const v = handValue(me.hand);
+    scoreEl.textContent = v;
+    scoreEl.className = 'score-badge my-score show' + (v > 21 ? ' bust' : v === 21 && me.hand.length === 2 ? ' bj' : '');
+  } else {
+    scoreEl.className = 'score-badge my-score';
+  }
+}
+
+// ─── STATUS & BUTTONS ──────────────────────────────────────────────
+function updateStatus(state, me) {
+  let msg = '', hi = false;
+  if (state.phase === 'betting') {
+    const readyCount = state.order.filter(id => state.players[id]?.ready).length;
+    const total = state.order.length;
+    if (me.ready) msg = `Waiting for others… (${readyCount}/${total} ready)`;
+    else msg = 'Place your bet and press Ready';
+  } else if (state.phase === 'playing') {
+    if (state.currentTurn === myId) { msg = 'Your turn!'; hi = true; }
+    else {
+      const name = state.players[state.currentTurn]?.name || '';
+      msg = `${name}'s turn…`;
+    }
+  } else if (state.phase === 'dealer') {
+    msg = "Dealer's turn…";
+  } else if (state.phase === 'done') {
+    msg = 'Round over';
+  }
+  setStatus(msg, hi);
+}
+
+function updateButtons(state, me) {
+  const isBetting = state.phase === 'betting' && !me.ready;
+  const isMyTurn = state.phase === 'playing' && state.currentTurn === myId && me.status === 'playing';
+
+  document.getElementById('bet-ui').classList.toggle('hid', !isBetting);
+  document.getElementById('play-ui').classList.toggle('hid', !isMyTurn);
+
+  if (isMyTurn) {
+    document.getElementById('btn-dbl').disabled = me.balance < me.bet;
+  }
+
+  // reset ready button if new betting phase
+  if (isBetting) {
+    const btn = document.getElementById('ready-btn');
+    if (!me.ready) {
+      btn.textContent = 'Ready ✓';
+      btn.classList.remove('waiting');
+      btn.disabled = false;
+      document.querySelectorAll('.chip').forEach(c => c.disabled = false);
+      myBet = me.bet || 0;
+      document.getElementById('bet-amount').textContent = fmt(myBet);
+    }
+  }
+}
+
+// ─── RESULTS ───────────────────────────────────────────────────────
+function showResults(results) {
+  const me = results[myId];
+  if (!me) return;
+
+  const icons = { blackjack:'🎰', win:'🏆', push:'🤝', lose:'😞', bust:'💀' };
+  const titles = { blackjack:'Blackjack!', win:'You win!', push:'Push', lose:'Dealer wins', bust:'Bust!' };
+  const cls = { blackjack:'c-win', win:'c-win', push:'c-push', lose:'c-lose', bust:'c-lose' };
+
+  const net = me.net;
+  const changeStr = net === 0 ? '±0 coins' : net > 0 ? `+${fmt(net)} coins` : `${fmt(net)} coins`;
+  const changeCls = net > 0 ? 'c-pos' : net === 0 ? 'c-neu' : 'c-neg';
+
+  // all players results
+  let othersHtml = '';
+  if (lastState) {
+    const others = lastState.order.filter(id => id !== myId);
+    if (others.length > 0) {
+      othersHtml = `<div class="all-results">` + others.map(id => {
+        const r = results[id];
+        const p = lastState.players[id];
+        if (!r || !p) return '';
+        const outcomeLabel = { blackjack:'Blackjack', win:'Win', push:'Push', lose:'Lose', bust:'Bust' }[r.outcome] || r.outcome;
+        const oc = { blackjack:'c-win', win:'c-win', push:'c-push', lose:'c-lose', bust:'c-lose' }[r.outcome] || '';
+        return `<div class="all-results-row"><span class="name">${p.name}</span><span class="outcome ${oc}">${outcomeLabel}</span></div>`;
+      }).join('') + `</div>`;
+    }
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'result-overlay';
+  wrap.innerHTML = `
+    <div class="result-card">
+      <div class="res-icon">${icons[me.outcome] || '🃏'}</div>
+      <div class="res-title ${cls[me.outcome] || ''}">${titles[me.outcome] || me.outcome}</div>
+      <div class="res-detail">Your: ${me.pv} &nbsp;·&nbsp; Dealer: ${me.dv}</div>
+      <div class="res-change ${changeCls}">${changeStr}</div>
+      ${othersHtml}
+    </div>
+  `;
+  document.getElementById('game-screen').appendChild(wrap);
+
+  // auto remove after 5s (new round resets state)
+  setTimeout(() => {
+    wrap.remove();
+    // reset rendered card counts for new round
+    renderedCards['dealer'] = 0;
+    if (lastState) for (const id of lastState.order) renderedCards[id] = 0;
+    document.getElementById('dealer-hand').innerHTML = '';
+    document.getElementById('my-hand').innerHTML = '';
+    document.querySelectorAll('.hand-area[id^="shand-"]').forEach(el => el.innerHTML = '');
+  }, 5500);
+}
+
+// ─── CARD BUILDER ──────────────────────────────────────────────────
+function buildCard(card, isDealer, flip = false) {
+  const el = document.createElement('div');
+  const hidden = card.r === '?';
+  if (hidden) {
+    el.className = 'card card-back deal-in';
+    el.innerHTML = '<div class="card-back-inner"></div>';
+  } else {
+    const isRed = RED_SUITS.has(card.s);
+    el.className = `card ${isRed ? 'cr' : 'cb'} ${flip ? 'flip-in' : 'deal-in'}`;
+    el.innerHTML = `
+      <div class="ccorn"><span>${card.r}</span><span>${card.s}</span></div>
+      <div class="crank">${card.r}</div>
+      <div class="csuit">${card.s}</div>
+      <div class="ccorn bl"><span>${card.r}</span><span>${card.s}</span></div>
+    `;
+  }
+  return el;
+}
+
+// ─── SEAT POSITIONS ────────────────────────────────────────────────
+// positions in px relative to viewport, centered around table oval
+function seatPosition(idx, total) {
+  // arc from 200° to 340° — left to right across the bottom half of the oval
+  const angles = {
+    1: [270],
+    2: [205, 335],
+    3: [200, 270, 340],
+    4: [195, 235, 305, 345],
+  };
+  const arc = (angles[total] || [270]);
+  const deg = arc[idx] ?? 270;
+  const rad = deg * Math.PI / 180;
+
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.46;
+  const rx = Math.min(310, window.innerWidth * 0.42);
+  const ry = Math.min(220, window.innerHeight * 0.26);
+
+  return { x: cx + rx * Math.cos(rad), y: cy + ry * Math.sin(rad) };
+}
+
+// ─── HELPERS ───────────────────────────────────────────────────────
+function handValue(hand) {
+  let t = 0, a = 0;
+  for (const c of hand) {
+    if (c.r === '?') continue;
+    if (['J','Q','K'].includes(c.r)) t += 10;
+    else if (c.r === 'A') { t += 11; a++; }
+    else t += parseInt(c.r);
+  }
+  while (t > 21 && a > 0) { t -= 10; a--; }
+  return t;
+}
+
+function fmt(n) { return Number(n).toLocaleString('en-US'); }
+
+function setStatus(msg, hi = false) {
+  const el = document.getElementById('status-line');
+  el.textContent = msg;
+  el.className = 'status-line' + (hi ? ' hi' : '');
+}
+
+function statusDot(status) {
+  return { waiting:'sd-w', ready:'sd-r', playing:'sd-p', stood:'sd-d', bust:'sd-d', done:'sd-d' }[status] || 'sd-w';
+}
+
+function shakeBet() {
+  const el = document.querySelector('.bet-display');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.32s ease';
+  setTimeout(() => el.style.animation = '', 340);
+}
+</script>
+</body>
+</html>
